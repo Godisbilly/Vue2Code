@@ -32,7 +32,6 @@ methods.forEach(method => {
       let ob = this.__ob__
       ob.observeArray(inserted)
     }
-    console.log('inserted', inserted)
     // 这个result是数组的长度
     return result
   }

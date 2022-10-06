@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="./umd/vue.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    {{ name }}
+    {{ age }}
+  </div>
+  <button>点击</button>
+  <script>
+    const vm = new Vue({
+      el: '#app',
+      data () {
+        return {
+          name: 'John',
+          age: 21,
+          address: {
+            city: 'beijing'
+          },
+          hobbies: ['eat', 'sleep', 'play', {
+            foods: ['apple', 'banana']
+          }]
+        }
+      },
+      methods: {},
+      created () { },
+      watch: {},
+      computed: {},
+      // template: `
+      // <div>{{msg}}</div>
+      // `
+    })
+
+    // 模板引擎性能很差，需要正则匹配替换 1.0的时候没有引入虚拟DOM的概念
+    // 采用虚拟DOM的方式，将模板转换成虚拟DOM，然后再转换成真实DOM，这样性能会好很多，只需要更新需要更新的地方
+    // 核心就是我们需要将模板变成JS语法， 通过JS语法生成虚拟DOM
+    // 将template语法转换为render函数
+  </script>
+
+  <script>
+    const btn = document.querySelector('button')
+    btn.addEventListener('click', () => {
+      vm.hobbies.push(1, 2, 3, 4, 5, {
+        job: 'coder'
+      })
+    })
+  </script>
+</body>
+
+</html>
