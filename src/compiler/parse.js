@@ -4,7 +4,6 @@ const startTagOpen = new RegExp(`^<${qnameCapture}`)
 const endTag = new RegExp(`^<\\/${qnameCapture}[^>]*>`)
 const attribute = /^\s*([^\s"`<>\/=]+)(?:\s*(=)\s*(?:"([^"]*)"+|`([^`]*)`+|([^\s"`=<>`]+)))?/
 const startTagClose = /^\s*(\/?)>/
-const defaultTagRE = /\{\{((?:.|\r?\n)+?)\}\}/g
 
 export function parseHTML (html) {
 

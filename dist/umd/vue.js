@@ -39,6 +39,65 @@
     return Constructor;
   }
 
+  function _slicedToArray(arr, i) {
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+  }
+
+  function _arrayWithHoles(arr) {
+    if (Array.isArray(arr)) return arr;
+  }
+
+  function _iterableToArrayLimit(arr, i) {
+    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+
+    if (_i == null) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+
+    var _s, _e;
+
+    try {
+      for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);
+
+        if (i && _arr.length === i) break;
+      }
+    } catch (err) {
+      _d = true;
+      _e = err;
+    } finally {
+      try {
+        if (!_n && _i["return"] != null) _i["return"]();
+      } finally {
+        if (_d) throw _e;
+      }
+    }
+
+    return _arr;
+  }
+
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  }
+
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+    return arr2;
+  }
+
+  function _nonIterableRest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+
   // 重写数组中的部分方法
   // 获取数组的原型
   var oldArrayProto = Array.prototype; // newArrayProto.__proto__ = oldArrayProto
@@ -318,7 +377,59 @@
     return root;
   }
 
+  function genProps(attrs) {
+    var str = '';
+    attrs.forEach(function (attr) {
+      if (attr.name === 'style') {
+        var obj = {};
+        attr.value.split(';').forEach(function (item) {
+          var _item$split = item.split(':'),
+              _item$split2 = _slicedToArray(_item$split, 2),
+              key = _item$split2[0],
+              value = _item$split2[1];
+
+          obj[key] = value;
+        });
+        attr.value = obj;
+      }
+
+      str += "".concat(attr.name, ":").concat(JSON.stringify(attr.value), ",");
+    });
+    return "{".concat(str.slice(0, -1), "}");
+  }
+
+  var defaultTagRE = /\{\{((?:.|\r?\n)+?)\}\}/g;
+
+  function genChild(node) {
+    console.log('child', node);
+
+    if (node.type === 1) {
+      return codegen(node);
+    } else {
+      if (!defaultTagRE.test(node.text)) {
+        return "_v(".concat(JSON.stringify(node.text), ")");
+      }
+
+      return node.text;
+    }
+  }
+
+  function genChildren(children) {
+    if (children) {
+      return children.map(function (child) {
+        return genChild(child);
+      }).join(',');
+    } else {
+      return children;
+    }
+  }
+
+  function codegen(ast) {
+    var code = "_c(\n    '".concat(ast.tag, "',").concat(ast.attrs.length > 0 ? genProps(ast.attrs) : null).concat(ast.children.length > 0 ? ",".concat(genChildren(ast.children)) : null, ")");
+    return code;
+  } // Vue3采用的不是正则表达式
   // 对模板进行编译处理
+
 
   function compileToFunction(template) {
     // 对模板进行编译
@@ -326,6 +437,8 @@
     // 生成render方法（render方法执行后的返回结果就是虚拟DOM）
     var ast = parseHTML(template);
     console.log('ast', ast);
+    var code = codegen(ast);
+    console.log('code', code);
   }
 
   function initMixin(Vue) {
