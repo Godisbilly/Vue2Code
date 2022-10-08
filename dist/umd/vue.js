@@ -401,8 +401,6 @@
   var defaultTagRE = /\{\{((?:.|\r?\n)+?)\}\}/g;
 
   function genChild(node) {
-    console.log('child', node);
-
     if (node.type === 1) {
       return codegen(node);
     } else {
@@ -410,7 +408,27 @@
         return "_v(".concat(JSON.stringify(node.text), ")");
       }
 
-      return node.text;
+      var tokens = [];
+      var match;
+      defaultTagRE.lastIndex = 0;
+      var lastIndex = 0;
+
+      while (match = defaultTagRE.exec(node.text)) {
+        var index = match.index; // 匹配的位置
+
+        if (index > lastIndex) {
+          tokens.push(JSON.stringify(node.text.slice(lastIndex, index)));
+        }
+
+        tokens.push("_s(".concat(match[1].trim(), ")"));
+        lastIndex = index + match[0].length;
+      }
+
+      if (lastIndex < node.text.length) {
+        tokens.push(JSON.stringify(node.text.slice(lastIndex)));
+      }
+
+      return "_v(".concat(tokens.join('+'), ")");
     }
   }
 
