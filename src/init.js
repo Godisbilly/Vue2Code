@@ -1,5 +1,6 @@
 import { initState } from "./state.js"
 import { compileToFunction } from "./compiler/index.js"
+import { mountComponent } from "../lifecycle.js"
 
 export function initMixin (Vue) {
   // 初始化操作

@@ -1,4 +1,4 @@
-export function LifeCycle (Vue) {
+export function initLifeCycle (Vue) {
 
   // 渲染虚拟DOM
   Vue.prototype._render = function () {
@@ -9,9 +9,20 @@ export function LifeCycle (Vue) {
   Vue.prototype._update = function () {
     console.log('update')
     const vm = this
-    vm.$options.render() // 通过ast语法转义后生成的render方法
+    return vm.$options.render.call(vm) // 通过ast语法转义后生成的render方法
   }
 
+  Vue.prototype._c = function () {
+
+  }
+
+  Vue.prototype._v = function () {
+
+  }
+
+  Vue.prototype._s = function (value) {
+    return JSON.stringify(value)
+  }
 }
 
 
