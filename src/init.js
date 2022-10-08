@@ -38,8 +38,9 @@ export function initMixin (Vue) {
         // jsx最终会被编译成h('xxx')
       }
     } // if (typeof opts.render === 'function') opts.render()
-
     // script标签引用的vue.global.js  这个编译过程是在浏览器中运行的
     // runtime是不包含模板编译的，整个编译是打包的时候通过loader来转译.vue文件的，用runtime的时候不能用template
+    // 组件的挂载
+    mountComponent(vm, el)
   }
 }

@@ -454,9 +454,10 @@
     // 将template转换成ast语法树
     // 生成render方法（render方法执行后的返回结果就是虚拟DOM）
     var ast = parseHTML(template);
-    console.log('ast', ast);
-    var code = codegen(ast);
-    console.log('code', code);
+    var code = codegen(ast); // 所有模版的实现原理都是with + new Function
+
+    code = "with(this){return ".concat(code, "}");
+    return new Function(code); // 根据代码生成render函数
   }
 
   function initMixin(Vue) {
@@ -498,7 +499,10 @@
       } // if (typeof opts.render === 'function') opts.render()
       // script标签引用的vue.global.js  这个编译过程是在浏览器中运行的
       // runtime是不包含模板编译的，整个编译是打包的时候通过loader来转译.vue文件的，用runtime的时候不能用template
+      // 组件的挂载
 
+
+      mountComponent(vm, el);
     };
   }
 
@@ -507,6 +511,7 @@
   }
 
   initMixin(Vue);
+  initLifeCycle(Vue);
 
   return Vue;
 

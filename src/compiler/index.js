@@ -63,7 +63,8 @@ export function compileToFunction (template) {
   // 将template转换成ast语法树
   // 生成render方法（render方法执行后的返回结果就是虚拟DOM）
   let ast = parseHTML(template)
-  console.log('ast', ast)
-  const code = codegen(ast)
-  console.log('code', code)
+  let code = codegen(ast)
+  // 所有模版的实现原理都是with + new Function
+  code = `with(this){return ${code}}`
+  return new Function(code) // 根据代码生成render函数
 }
