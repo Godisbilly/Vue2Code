@@ -1,6 +1,6 @@
 import { initState } from "./state.js"
 import { compileToFunction } from "./compiler/index.js"
-import { mountComponent } from "../lifecycle.js"
+import { mountComponent } from "./lifecycle.js"
 
 export function initMixin (Vue) {
   // 初始化操作
@@ -9,11 +9,8 @@ export function initMixin (Vue) {
     // 接下来就是处理options
     const vm = this
     vm.$options = options
-
     // 初始化状态
     initState(vm)
-
-
     if (options.el) {
       // 实现数据的挂载
       vm.$mount(options.el)
@@ -34,7 +31,7 @@ export function initMixin (Vue) {
           template = div.outerHTML
         }
       }
-      if (template) {
+      if (template && el) {
         opts.render = compileToFunction(template)
         // jsx最终会被编译成h('xxx')
       }

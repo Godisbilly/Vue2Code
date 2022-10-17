@@ -464,24 +464,31 @@
     // 渲染虚拟DOM
     Vue.prototype._render = function () {
       console.log('render');
-    }; // 变成真实DOM
-
-
-    Vue.prototype._update = function () {
-      console.log('update');
-      var vm = this;
-      return vm.$options.render.call(vm); // 通过ast语法转义后生成的render方法
     };
 
     Vue.prototype._c = function () {};
 
     Vue.prototype._v = function () {};
+
+    Vue.prototype._s = function (value) {
+      return JSON.stringify(value);
+    }; // 变成真实DOM
+
+
+    Vue.prototype._update = function () {
+      console.log('update');
+      var vm = this; // 生成虚拟节点
+      // 让with中的this指向vm
+
+      return vm.$options.render.call(vm); // 通过ast语法转义后生成的render方法
+    };
   }
   function mountComponent(vm, el) {
-    // 调用render方法，产生虚拟节点 虚拟DOM
-    vm._render(); // vm.$options.render() 虚拟节点
-    //根据虚拟DOM产生真实DOM
-    // 插入到el元素中
+    // 1.调用render方法，产生虚拟节点 虚拟DOM
+    // 执行vm.$options.render()方法，生成虚拟节点
+    // vm._update() 将虚拟节点生成真实节点
+    vm._update(vm._render()); // 2.根据虚拟DOM产生真实DOM
+    // 3.插入到el元素中
 
   } // Vue核心流程：
   // 1.创造了响应式数据
@@ -523,7 +530,7 @@
           }
         }
 
-        if (template) {
+        if (template && el) {
           opts.render = compileToFunction(template); // jsx最终会被编译成h('xxx')
         }
       } // if (typeof opts.render === 'function') opts.render()

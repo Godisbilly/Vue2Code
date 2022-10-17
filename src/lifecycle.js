@@ -1,3 +1,6 @@
+import { createElementVNode, createTextNode } from "./vdom.index.js"
+
+
 export function initLifeCycle (Vue) {
 
   // 渲染虚拟DOM
@@ -5,33 +8,37 @@ export function initLifeCycle (Vue) {
     console.log('render')
   }
 
-  // 变成真实DOM
-  Vue.prototype._update = function () {
-    console.log('update')
-    const vm = this
-    return vm.$options.render.call(vm) // 通过ast语法转义后生成的render方法
-  }
-
   Vue.prototype._c = function () {
-
+    return createElementVNode(this, ...arguments)
   }
 
   Vue.prototype._v = function () {
-
+    return createTextNode(this, ...arguments)
   }
 
   Vue.prototype._s = function (value) {
     return JSON.stringify(value)
   }
+
+  // 变成真实DOM
+  Vue.prototype._update = function () {
+    console.log('update')
+    // 生成虚拟节点
+    // 让with中的this指向vm
+    return vm.$options.render.call(this) // 通过ast语法转义后生成的render方法
+  }
+
 }
 
 
 
 export function mountComponent (vm, el) {
-  // 调用render方法，产生虚拟节点 虚拟DOM
-  vm._render() // vm.$options.render() 虚拟节点
-  //根据虚拟DOM产生真实DOM
-  // 插入到el元素中
+  // 1.调用render方法，产生虚拟节点 虚拟DOM
+  // 执行vm.$options.render()方法，生成虚拟节点
+  // vm._update() 将虚拟节点生成真实节点
+  vm._update(vm._render())
+  // 2.根据虚拟DOM产生真实DOM
+  // 3.插入到el元素中
 }
 
 // Vue核心流程：
